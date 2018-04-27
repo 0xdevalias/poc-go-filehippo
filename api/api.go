@@ -9,8 +9,9 @@ func (c *Client) ProgramDefinitions() (*ProgramDefinitions, error) {
 		//SetHeader("RequestTime", time.Now().UTC().Format(time.RFC3339Nano)).
 
 	// Trying to control for header case..
+	RFC339Nano7 := "2006-01-02T15:04:05.9999999Z07:00"
 	req.Header["AccessToken"] = append(req.Header["AccessToken"], c.accessTokenProducer())
-	req.Header["RequestTime"] = append(req.Header["RequestTime"], time.Now().UTC().Format(time.RFC3339Nano))
+	req.Header["RequestTime"] = append(req.Header["RequestTime"], time.Now().UTC().Format(RFC339Nano7))
 
 	r, err := req.Get("/api/v1/ProgramDefinitions")
 	if err != nil {

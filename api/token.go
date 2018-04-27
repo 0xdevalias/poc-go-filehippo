@@ -4,6 +4,7 @@ import (
 	"crypto/cipher"
 	"crypto/des"
 	"encoding/base64"
+	"fmt"
 	"log"
 	"time"
 )
@@ -82,7 +83,11 @@ func EncryptionKey() []byte {
 }
 
 func (c *Client) AccessToken() string {
-	requestTime := time.Now().Format("15:04:05")
+	return c.MakeAccessToken(time.Now())
+}
+
+func (c *Client) MakeAccessToken(time time.Time) string {
+	requestTime := time.Format("15:04:05")
 
 	key := EncryptionKey()
 	iv := []byte(requestTime)
@@ -93,4 +98,24 @@ func (c *Client) AccessToken() string {
 	}
 
 	return base64.StdEncoding.EncodeToString(ciphertext)
+}
+
+func (c *Client) CheckToken(checkTimeS string, checkToken string) {
+	RFC339Nano7 := "2006-01-02T15:04:05.9999999Z07:00"
+
+	checkTime, err := time.Parse(RFC339Nano7, checkTimeS)
+	if err != nil {
+		panic(err)
+	}
+
+	ourToken := c.MakeAccessToken(checkTime)
+
+	fmt.Printf("checkTimeS : %s\n", checkTimeS)
+	fmt.Printf("checkTime  : %s\n", checkTime.Format(RFC339Nano7))
+	fmt.Printf("checkToken : %s\n", checkToken)
+	fmt.Printf("ourToken   : %s\n", ourToken)
+
+	if !(ourToken == checkToken) {
+		panic("tokens don't match.. fail")
+	}
 }
