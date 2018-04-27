@@ -12,22 +12,40 @@ const (
 
 type Client struct {
 	restyClient *resty.Client
+
+	clientID            string
+	accessTokenProducer func() string
 }
 
-func DefaultClient(accessToken string) *Client {
+func DefaultClient(clientID string) *Client {
 	c := resty.DefaultClient
 	c.SetHostURL(BaseUrl)
-	c.SetHeader("AccessToken", accessToken)
-	c.SetHeader("User-Agent", "download_manager")
-	c.SetHeader("AppManagerVersion", "2.0.0.392")
-	c.SetHeader("ClientId", "") // TODO: Does this need to be set?
-	client := Client{restyClient: c}
+
+	//c.SetHeader("User-Agent", "download_manager")
+	//c.SetHeader("AppManagerVersion", "2.0.0.392")
+	//c.SetHeader("ClientId", clientID)
+
+	// Trying to control for header casing..
+	c.Header["User-Agent"] = append(c.Header["User-Agent"], "download_manager")
+	c.Header["AppManagerVersion"] = append(c.Header["AppManagerVersion"], "2.0.0.392")
+	c.Header["ClientId"] = append(c.Header["ClientId"], clientID)
+
+	client := Client{
+		restyClient: c,
+		clientID:    clientID,
+	}
+	client.accessTokenProducer = client.AccessToken
 
 	return &client
 }
 
 func (c *Client) WithDebug() *Client {
 	c.restyClient.SetDebug(true)
+	return c
+}
+
+func (c *Client) WithProxy(proxyURL string) *Client {
+	c.restyClient.SetProxy(proxyURL)
 	return c
 }
 

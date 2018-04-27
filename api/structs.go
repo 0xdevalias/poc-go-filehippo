@@ -39,9 +39,9 @@ type System struct {
 }
 
 type Program struct {
-	Registry interface{} `json:"Registry"`
-	ID       int         `json:"Id"`
-	Files    []Files     `json:"Files"`
+	Registry []string `json:"Registry"` // TODO: Not sure this is right..
+	ID       int      `json:"Id"`
+	Files    []Files  `json:"Files"`
 }
 
 type Files struct {

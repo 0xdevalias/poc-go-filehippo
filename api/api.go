@@ -1,9 +1,18 @@
 package api
 
+import "time"
+
 func (c *Client) ProgramDefinitions() (*ProgramDefinitions, error) {
-	r, err := c.restyClient.R().
-		SetResult(ProgramDefinitions{}).
-		Get("/api/v1/ProgramDefinitions")
+	req := c.restyClient.R().
+		SetResult(ProgramDefinitions{})
+		//SetHeader("AccessToken", c.accessTokenProducer()).
+		//SetHeader("RequestTime", time.Now().UTC().Format(time.RFC3339Nano)).
+
+	// Trying to control for header case..
+	req.Header["AccessToken"] = append(req.Header["AccessToken"], c.accessTokenProducer())
+	req.Header["RequestTime"] = append(req.Header["RequestTime"], time.Now().UTC().Format(time.RFC3339Nano))
+
+	r, err := req.Get("/api/v1/ProgramDefinitions")
 	if err != nil {
 		return nil, err
 	}
@@ -18,6 +27,9 @@ func (c *Client) ProgramDefinitions() (*ProgramDefinitions, error) {
 
 func (c *Client) ScanResults(scanRequest ScanRequest) (*ScanResults, error) {
 	r, err := c.restyClient.R().
+		SetHeader("AccessToken", c.accessTokenProducer()).
+		SetHeader("RequestTime", time.Now().UTC().Format(time.RFC3339Nano)).
+		SetHeader("Expect", "100-continue").
 		SetBody(scanRequest).
 		SetResult(ScanResults{}).
 		Post("/api/v1/ScanResults")
@@ -35,6 +47,8 @@ func (c *Client) ScanResults(scanRequest ScanRequest) (*ScanResults, error) {
 
 func (c *Client) InstallerPrograms(irReq InstallerProgramsRequest) (*InstallerProgramsResponse, error) {
 	r, err := c.restyClient.R().
+		SetHeader("AccessToken", c.accessTokenProducer()).
+		SetHeader("RequestTime", time.Now().UTC().Format(time.RFC3339Nano)).
 		SetBody(irReq).
 		SetResult(InstallerProgramsResponse{}).
 		Post("/api/v1/InstallerPrograms")

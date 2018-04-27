@@ -8,9 +8,8 @@ You probably shouldn't use this, it may violate the terms of service.
 
 ```
 go run *.go
-```
+``` 
 
 ## Known Issues
 
-* The [official client](https://filehippo.com/download_app_manager/) appears to change it's `accessToken` with every request
-  * Without understanding how that is generated in the client (.NET), this code is probably useless.. 
+* This doesn't actually work.. does the order/case of the headers matter?
